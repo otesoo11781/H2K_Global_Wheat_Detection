@@ -55,7 +55,7 @@ Hence, the data directory is structured as:
 ```
 
 ## Transfer Training
-**Important: This step is optional. If you don't want to retrain the MSCOCO pretrained model, please download [our trained weights](https://drive.google.com/file/d/1TBx_8mX_zmDghYv6cIFiJC7ntCB9qbFp/view?usp=sharing).**
+**Important: This step is optional. If you don't want to retrain the MSCOCO pretrained model, please download [our trained weights](https://drive.google.com/file/d/1pl82ZLSlgvjJe03MZvMJZ6Iqoz1KdsVr/view?usp=sharing).**
 
 - **efficientdet-d6_204_57500.pth**: our weights trained on global wheat detection dataset with our training strategy. 
 
