@@ -17,7 +17,7 @@ The following specs were used to train and test the model:
 - 2x RTX TITAN with CUDA=10.1
 
 ## Reproducing Submission
-To reproduct my submission without retrainig, do the following steps:
+To reproduct my submission, do the following steps:
 1. [Installation](#installation)
 2. [Dataset Preparation](#dataset-preparation)
 3. [Transfer Training](#transfer-training)
@@ -25,53 +25,37 @@ To reproduct my submission without retrainig, do the following steps:
 5. [Make Submission](#make-submission)
 
 ## Installation
-The details about the installation for mmdetection can refer to [get_started.md](mmdetection/docs/get_started.md).
-
-Run the following command to install my modifed mmdetection:
+Run the following command to install our implementation:
 
 ```shell
-conda create -n open-mmlab python=3.7 -y
-conda activate open-mmlab
-
-conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c pytorch -y
-
-# install the mmcv
-pip install mmcv-full
-
-# install mmdetection
-git clone https://github.com/otesoo11781/Visual_Recognition_HW3.git
-cd Visual_Recognition_HW3/mmdetection
-pip install -r requirements/build.txt
-pip install -v -e . # or "python setup.py develop"
-
-# install some required packages
-conda install matplotlib
-conda install scipy
+# install the requirements
+pip install pycocotools numpy opencv-python tqdm tensorboard tensorboardX pyyaml webcolors
+pip install torch==1.4.0
+pip install torchvision==0.5.0
+pip install ensemble-boxes
+pip install -U albumentations
 ```
 
-Besides, You can install mmdetection by the orignal repo [mmdetection](https://github.com/open-mmlab/mmdetection), and then download **mmdetection/configs/myconfigs** folder from my repo to the same location in original repo. 
-
-If there is any problem about installation, please refer to the original repo of [mmdetection](https://github.com/open-mmlab/mmdetection).
-
 ## Dataset Preparation
-Download the dataset from the [Google drive](https://drive.google.com/drive/folders/1fGg03EdBAxjFumGHHNhMrz2sMLLH04FK) which is provided by TAs.
+Download the dataset from the [Global Wheat Detection](https://www.kaggle.com/c/global-wheat-detection/data) on Kaggle website.
 
-Then, unzip them and put it under the **mmdetetction/data/** directory.
+Then, unzip them and put them under the **./dataset/** directory.
 
 Hence, the data directory is structured as:
 ```
-./mmdetection/
-  +- data/
-  |  +- train_images/
-     |  +- 2007_000042.jpg ...
-  |  +- test_images/
-     |  +- 2007_000629.jpg ...
-  |  +- pascal_train.json
-  |  +- test.json
+./datasets/
+  +- test/
+  |  +- 2fd875eaa.jpg
+  |  +- ....jpg 
+  +- train/
+  |  +- 00b5c6764.jpg
+  |  +- ....jpg
+  +- sample_submission.csv
+  +- train.csv
 ```
 
 ## Transfer Training
-**Important: This step is optional. If you don't want to retrain the ImageNet pretrained model, please download [my trained weights](https://drive.google.com/file/d/1UOZ7AEisLbKZkZhwHsd8rVqxsKE9J13x/view?usp=sharing).**
+**Important: This step is optional. If you don't want to retrain the MSCOCO pretrained model, please download [my trained weights]().**
 
 - **latest.pth**: my weights trained on tiny PASCAL VOC dataset (provided by TAs) with 24 epochs. 
 
