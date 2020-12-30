@@ -55,7 +55,7 @@ Hence, the data directory is structured as:
 ```
 
 ## Transfer Training
-**Important: This step is optional. If you don't want to retrain the MSCOCO pretrained model, please download [our trained weights]().**
+**Important: This step is optional. If you don't want to retrain the MSCOCO pretrained model, please download [our trained weights](https://drive.google.com/file/d/1TBx_8mX_zmDghYv6cIFiJC7ntCB9qbFp/view?usp=sharing).**
 
 - **efficientdet-d6_204_57500.pth**: our weights trained on global wheat detection dataset with our training strategy. 
 
@@ -75,7 +75,7 @@ P.S. If you don't want to spend a half day training a model, you can skip this s
 
 Now, let's transferly train the EfficientDet-D6 on global wheat dateset.
 
-0. please download [MS COCO pretrained weights]()
+0. please download [MS COCO pretrained weights](https://drive.google.com/file/d/1TBx_8mX_zmDghYv6cIFiJC7ntCB9qbFp/view?usp=sharing)
 
 1. move **efficientdet-d6.pth** to the **./Yet-Another-EfficientDet-Pytorch-master/pretrained_weights/** directory. 
 
