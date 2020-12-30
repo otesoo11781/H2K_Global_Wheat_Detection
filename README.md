@@ -39,7 +39,7 @@ pip install -U albumentations
 ## Dataset Preparation
 Download the dataset from the [Global Wheat Detection](https://www.kaggle.com/c/global-wheat-detection/data) on Kaggle website.
 
-Then, unzip them and put them under the **./dataset/** directory.
+Then, unzip them and put them under the **./datasets/** directory.
 
 Hence, the data directory is structured as:
 ```
@@ -55,59 +55,66 @@ Hence, the data directory is structured as:
 ```
 
 ## Transfer Training
-**Important: This step is optional. If you don't want to retrain the MSCOCO pretrained model, please download [my trained weights]().**
+**Important: This step is optional. If you don't want to retrain the MSCOCO pretrained model, please download [our trained weights]().**
 
-- **latest.pth**: my weights trained on tiny PASCAL VOC dataset (provided by TAs) with 24 epochs. 
+- **efficientdet-d6_204_57500.pth**: our weights trained on global wheat detection dataset with our training strategy. 
 
-Then, move **latest.pth** to the **./mmdetection/work_dirs/cascade_mask_rcnn_resnest/** directory.
+Then, move **efficientdet-d6_204_57500.pth** to the **./Yet-Another-EfficientDet-Pytorch-master/logs/aug_mix_cut/global-wheat-detection/** directory.
 
 Hence, the weights directory is structured as:
 ```
-./mmdetection/
-  +- work_dirs/
-  |  +- cascade_mask_rcnn_resnest/
-     |  +- latest.pth
+./Yet-Another-EfficientDet-Pytorch-master/
+  |  +- logs/
+     |  +- aug_mix_cut/
+        |  +- global-wheat-detection/
+           |  +- efficientdet-d6_204_57500.pth
 ```
 
-### Retrain the ImageNet pretrained model on the given dataset (optional)
-P.S. If you don't want to spend a half day training a model, you can skip this step and just use the **latest.pth** I provided to inference. 
+### Retrain the MS COCO pretrained model on the given dataset (optional)
+P.S. If you don't want to spend a half day training a model, you can skip this step and just use the **efficientdet-d6_204_57500.pth** I provided to inference. 
 
-Now, let's transferly train the Cascade Mask RCNN + ResNeSt on tiny PASCAL VOC dataset:
+Now, let's transferly train the EfficientDet-D6 on global wheat dateset.
 
-1. please ensure ./mmdetection/configs/myconfigs/cascade_mask_rcnn_resnest.py exists.
+0. please download [MS COCO pretrained weights]()
 
-2. please check your current directory is ./mmdetection.
+1. move **efficientdet-d6.pth** to the **./Yet-Another-EfficientDet-Pytorch-master/pretrained_weights/** directory. 
 
-3. run the following training command (the last argument "2" means the number of gpus):
+2. please check your current directory is ./Yet-Another-EfficientDet-Pytorch-master.
+
+3. run the following training command:
 
 ```
-bash ./tools/dist_train.sh configs/myconfigs/cascade_mask_rcnn_resnest.py 2
+$ python train_aug.py -c 6 --batch_size 12 --num_epochs 85 --le 1e-4 -w pretrained_weights/efficientdet-d6.pth
 ```
 
-It takes about 13 hours to train the model on 2 RTX 2080 GPUs.
+In our report, we first train our model without cutmix for 80 epochs, and then retrain with cutmix for 5 epochs.
 
-Finally, we can find the final weights **latest.pth** in **./mmdetection/work_dirs/cascade_mask_rcnn_resnest/** directory.
+Finally, we can find the final weights in **./Yet-Another-EfficientDet-Pytorch-master/logs/aug_mix_cut/global-wheat-detection/** directory.
 
 
 ## Inference
 With the testing dataset and trained model, you can run the following commands to obtain the predicted results:
 
-1. please check your current directory is ./mmdetection.
+1. please check your current directory is ./Yet-Another-EfficientDet-Pytorch-master.
 
-2. run the testing bash script (the third argument "2" means the number of gpus):
+2. run the pseudo labeling training script:
 
 ```
-./tools/dist_test.sh configs/myconfigs/cascade_mask_rcnn_resnest.py ./work_dirs/cascade_mask_rcnn_resnest/latest.pth 2 --format-only --options "jsonfile_prefix=./0856610"
+$ python train_pseudo.py --data_path ../datasets/global-wheat-detection -c 6 -w ./logs/aug_mix_cut/global-wheat-detection/efficientdet-d6_204_57500_mix_cut.pth --threshold 0.43 -p global_wheat_detection -n 0 --batch_size 4 --num_epochs 2 -pw ./logs/aug_mix_cut/global-wheat-detection/efficientdet-d6_204_57500_mix_cut.pth --wbf_threshold 0.45 --wbf_iou_threshold 0.55 --quantity 1 --confidence 0.3
 ```
 
-After that, you will get final segmentation result (**./mmdetection/0856610.segm.json**).
+3. do the final prediction by following command:
+
+```
+$ python wheat_test.py --data_path ../datasets/global-wheat-detection -c 6 -w ./logs/pseudo_train/global-wheat-detection/last_ckpt.pth --threshold 0.43 --wbf_threshold 0.45 --wbf_iou_threshold 0.55
+```
+
+After that, you will get final detection result (**./Yet-Another-EfficientDet-Pytorch-master/submission.csv**).
 
 
 ## Make Submission
-1. rename the 0856610.segm.json as 0856610.json
+1. submit pseudo.ipynb to kaggle competition.
 
-2. submit **0856610.json** to [here](https://drive.google.com/drive/folders/1VhuHvCyz2CH4yzDreyVTwhZiOFbQB09B).
-
-**Note**: The repo has provided **mAP_0.38246_0856610.json** which is my submission of predicted segmentation result with **0.38246 mAP**.
+The final scores are 0.7261 0.6433 on public and private leaderboard, respectively.
 
 
